@@ -20,15 +20,11 @@
               <hr />
               <span class="price">{{ product.price }}تومان</span>
               <hr />
-              <ul v-if="product">
-                <li v-for="(item, index) in product" :key="index">
-                {{product.size_charts.title}}
-                </li>
-              </ul>
               <div class="action">
                 <button
                   class="add-to-cart text-white bg-black btn btn-default btn-lg"
                   type="button"
+                  @click="addToCart()"
                 >
                   اضافه کردن به سبد خرید
                 </button>
@@ -52,22 +48,15 @@ export default {
   setup() {
     const store = useStore();
     onMounted(() => {
-      // if (self.product == null) {
-      //   getProduct();
-      // }
       store.dispatch("fetchProductFromServer", self.$route.params.id);
     });
     let product = computed(() => {
       return store.getters.getProduct;
     });
-    // onUnmounted(() => {
-    //   store.commit("setEventDetail", null);
-    // });
-    // function getProduct() {
-    //   store.dispatch("fetchProductFromServer", self.$route.params.id);
-    //  alert(product)
-    // }
-    return { product };
+    function addToCart() {
+      store.commit('addToCart', self.product)
+    }
+    return { product,addToCart };
   },
 };
 </script>

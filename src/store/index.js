@@ -13,6 +13,9 @@ export default createStore({
     // title state
     title: null,
     productFlag: false,
+    cartItem: [],
+    //cart
+    // cart: [],
   },
   mutations: {
     setProducts(state, list) {
@@ -29,6 +32,20 @@ export default createStore({
     setProductFlag(state, Boolean) {
       state.productFlag = Boolean;
     },
+
+    setCartProduct(state, item) {
+      state.cartItem = item;
+    },
+    // add to cart
+    // addToCart(state, product) {
+    //   let item = state.cart.find((i) => i.id === product.id);
+
+    //   if (item) {
+    //     item.quantity++;
+    //   } else {
+    //     state.cart.push({ ...product, quantity: 1 });
+    //   }
+    // },
   },
   actions: {
     //get products list from server
@@ -62,16 +79,20 @@ export default createStore({
       });
     },
 
-    // saeed style
-    //     async callApiForProducts({ commit, state }) {
-    //       const { data } = await axios.get(
-    //         `https://api.elinorboutique.com/v1/front/products?${
-    //           state.title ? "&title=" + state.title : ""
-    //         }"&page=1"
-    // `
-    //       );
-    //       commit("setProducts", data.data.products.data);
-    //     },
+    //addToCart
+    async addToCart({ commit, state }) {
+      await Axios.post("cart", state.product).then((res) => {
+        commit("setProduct", res.data.data.products);
+      });
+    },
+
+    // get product from cart
+
+    async fetchProductFromCard({ commit }) {
+      await Axios.get("cart").then((res) => {
+        commit("setCartProduct", res.data.data.product);
+      });
+    },
   },
   getters: {
     getProducts(state) {
@@ -86,5 +107,15 @@ export default createStore({
     getProductFlag(state) {
       return state.productFlag;
     },
+    getCartProducct(state) {
+      return state.cartItem;
+    },
+    //add to cart
+    // productQuantity: (state) => (product) => {
+    //   const item = state.cart.find((i) => i.id === product.id);
+
+    //   if (item) return item.quantity;
+    //   else return null;
+    // },
   },
 });

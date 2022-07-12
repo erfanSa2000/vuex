@@ -1,26 +1,6 @@
 <template>
   <div id="container" class="container d-flex mx-auto my-0">
     <div class="row col-10 py-5">
-      <div class="btn-group mx-auto my-3 d-table">
-        <button
-          @click="mostSalse()"
-          class="btn btn-light btn-outline-secondary btn-lg"
-        >
-          most sales
-        </button>
-        <button
-          @click="low_to_high()"
-          class="btn btn-light btn-outline-secondary btn-lg"
-        >
-          most dicount
-        </button>
-        <button
-          @click="high_to_low()"
-          class="btn btn-light btn-outline-secondary btn-lg"
-        >
-          VIP
-        </button>
-      </div>
       <div class="row">
         <template v-if="productFlag">
           <products
@@ -53,6 +33,7 @@
           v-model="title"
           type="search"
           placeholder="Search"
+          @keypress.enter="searchtarget()"
         />
         <button @click="searchtarget()" class="btn bg-success">Search</button>
       </div>
@@ -78,16 +59,11 @@ export default {
   setup() {
     const store = useStore();
     let title = ref("");
-    let topSales = ref("");
-    let highToLow = ref("");
-    let lowToHigh = ref("");
     let productFlag = ref(null);
     let loaderFlag = ref(true);
     let filter = ref({ page: "", search: "" });
     onMounted(() => {
-      if (self.products == null) {
-        getProducts();
-      }
+      getProducts();
       watch(products, (newVal) => {
         if (newVal) {
           loaderFlag.value = false;
@@ -117,33 +93,13 @@ export default {
       store.dispatch("fetchTitle");
       loaderFlag.value = true;
     }
-    //filter buttons
-    function mostSalse() {
-      store.commit("setProductFlag", false);
-      store.commit("setTitle", topSales.value);
-      store.dispatch("fetchTitle");
-      loaderFlag.value = true;
-    }
-    function low_to_high() {
-      store.commit("setProductFlag", false);
-      store.commit("setLowTohigh", lowToHigh.value);
-      store.dispatch("fetchTitle");
-      loaderFlag.value = true;
-    }
-
-    function high_to_low() {
-      store.commit("setProductFlag", false);
-      store.commit("setHighToLow", highToLow.value);
-      store.dispatch("fetchTitle");
-      loaderFlag.value = true;
-    }
-
     //paagination callback function
     function clickCallback(pageNum) {
-      self.$router.push(`/products?page=${pageNum}`).then(() => {
+      self.$router.push(`/?page=${pageNum}`).then(() => {
         document
           .getElementById("container")
           .scrollIntoView({ behavior: "smooth" });
+        loaderFlag.value = true;
         getProducts();
       });
     }
@@ -157,10 +113,6 @@ export default {
       searchtarget,
       loaderFlag,
       productFlag,
-      top_sales,
-      mostSalse,
-      high_to_low,
-      low_to_high,
     };
   },
 };
