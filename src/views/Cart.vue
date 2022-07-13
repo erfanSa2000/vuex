@@ -6,9 +6,12 @@
       Shopping cart
     </h1>
     <div
-      class="d-flex justify-content-center align-items-center fs-4 text-bg-secondary p-4"
+      class="d-flex justify-content-around align-items-center text-bg-secondary p-4"
     >
-      Total Price = تومان {{ cartTotalPrice }}
+      <span class="fs-4 text-light">
+        Total Price = تومان {{ cartTotalPrice }}</span
+      >
+      <button class="btn bg-success text-warning fs-5 btn-outline-warning">ثبت خرید</button>
     </div>
     <div class="container my-5">
       <div class="inner-container">

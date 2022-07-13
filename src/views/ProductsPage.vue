@@ -24,7 +24,7 @@
       <div class="row">
         <template v-if="productFlag">
           <products
-            class="row"
+            class="row mt-5"
             :products="item"
             v-for="(item, index) in products.data"
             :key="index"

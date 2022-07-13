@@ -1,5 +1,7 @@
 import { createStore } from "vuex";
 import axios from "axios";
+import { useCookies } from "vue3-cookies";
+const { cookies } = useCookies();
 const Axios = axios.create({
   baseURL: "https://api.elinorboutique.com/v1/",
 });
@@ -8,15 +10,21 @@ export default createStore({
   state: {
     //products state
     products: null,
+
     // product detail state
     product: null,
+
     // title state
     title: "",
+
     sortName: "",
+
     productFlag: false,
+
     //cart
     cart: [],
-    categoryFilter: null,
+
+    categoryFilter: '',
   },
   mutations: {
     setProducts(state, list) {
@@ -92,12 +100,13 @@ export default createStore({
       await Axios.get(
         `front/products?${
           state.sortName != "" ? "sort=" + state.sortName : ""
-        }${state.title != "" ? "&title=" + state.title : ""}
-        ${
+        }${
           state.categoryFilter != ""
             ? "&category_id=" + state.categoryFilter
-            : ""
-        }`
+            : "2"
+        }
+        ${state.title != "" ? "&title=" + state.title : ""}
+        `
       ).then((res) => {
         commit("setProducts", res.data.data.products);
         commit("setProductFlag", true);
@@ -125,6 +134,10 @@ export default createStore({
     },
     removeProductFromCart({ commit }, product) {
       commit("DECREASE_QUANTITY", product);
+    },
+
+    addToCookies({ commit, state }) {
+      commit("setCookies", state.cart);
     },
   },
   getters: {
@@ -170,5 +183,6 @@ export default createStore({
     getCategoryFilter(state) {
       return state.categoryFilter;
     },
+
   },
 });
