@@ -19,12 +19,10 @@
 </template>
 
 <script>
-import { ref } from "vue";
 export default {
   props: {
     products: Object,
   },
-  setup(props) {},
 };
 </script>
 

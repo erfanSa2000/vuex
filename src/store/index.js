@@ -12,10 +12,10 @@ export default createStore({
     product: null,
     // title state
     title: null,
+
     productFlag: false,
-    cartItem: [],
     //cart
-    // cart: [],
+    cart: [],
   },
   mutations: {
     setProducts(state, list) {
@@ -29,6 +29,7 @@ export default createStore({
     setTitle(state, val) {
       state.title = val;
     },
+
     setProductFlag(state, Boolean) {
       state.productFlag = Boolean;
     },
@@ -36,16 +37,19 @@ export default createStore({
     setCartProduct(state, item) {
       state.cartItem = item;
     },
-    // add to cart
-    // addToCart(state, product) {
-    //   let item = state.cart.find((i) => i.id === product.id);
 
-    //   if (item) {
-    //     item.quantity++;
-    //   } else {
-    //     state.cart.push({ ...product, quantity: 1 });
-    //   }
-    // },
+    ADD_TO_CART(state, { product, quantity }) {
+      state.cart.push({
+        product,
+        quantity,
+      });
+    },
+
+    REMOVE_FROM_CART(state, product) {
+      state.cart = state.cart.filter((item) => {
+        return item.product.id !== product.id;
+      });
+    },
   },
   actions: {
     //get products list from server
@@ -79,19 +83,24 @@ export default createStore({
       });
     },
 
-    //addToCart
-    async addToCart({ commit, state }) {
-      await Axios.post("cart", state.product).then((res) => {
-        commit("setProduct", res.data.data.products);
+    //add to cart
+    addProductToCart({ commit, state }, { product, quantity }) {
+      // this lines said => if we have a product in cart dont add another new , instead increase the quantity
+
+      let productInCart = state.cart.find((item) => {
+        return item.product.id === product.id;
       });
+      if (productInCart) {
+        productInCart.quantity += quantity;
+        return;
+      }
+
+      commit("ADD_TO_CART", { product, quantity });
     },
 
-    // get product from cart
-
-    async fetchProductFromCard({ commit }) {
-      await Axios.get("cart").then((res) => {
-        commit("setCartProduct", res.data.data.product);
-      });
+    // remove product from cart
+    removeProductFromCart({ commit }, product) {
+      commit("REMOVE_FROM_CART", product);
     },
   },
   getters: {
@@ -110,12 +119,26 @@ export default createStore({
     getCartProducct(state) {
       return state.cartItem;
     },
-    //add to cart
-    // productQuantity: (state) => (product) => {
-    //   const item = state.cart.find((i) => i.id === product.id);
 
-    //   if (item) return item.quantity;
-    //   else return null;
-    // },
+    // show how many item are in the cart now
+    cartItemCount(state) {
+      // return state.cart.length;
+      let current = 0;
+      state.cart.forEach((item) => {
+        current += item.quantity;
+      });
+      return current;
+    },
+
+    // calculate Total Price
+    cartTotalPrice(state) {
+      let total = 0;
+
+      state.cart.forEach((item) => {
+        total += item.product.price * item.quantity;
+      });
+
+      return total;
+    },
   },
 });

@@ -45,18 +45,26 @@ export default {
   created() {
     self = this;
   },
+
   setup() {
     const store = useStore();
+
     onMounted(() => {
       store.dispatch("fetchProductFromServer", self.$route.params.id);
     });
+
+    function addToCart() {
+      store.dispatch("addProductToCart", {
+        product: product.value,
+        quantity: 1,
+      });
+    }
+    
     let product = computed(() => {
       return store.getters.getProduct;
     });
-    function addToCart() {
-      store.commit('addToCart', self.product)
-    }
-    return { product,addToCart };
+
+    return { product, addToCart };
   },
 };
 </script>

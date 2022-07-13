@@ -1,7 +1,7 @@
 <template>
-  <nav class="navbar navbar-expand-lg bg-light ">
+  <nav class="navbar navbar-expand-lg bg-primary">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">SHOP</a>
+      <a class="navbar-brand fs-2" href="/">SHOP</a>
       <button
         class="navbar-toggler"
         type="button"
@@ -16,10 +16,14 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <router-link class="nav-link active" aria-current="page" to="/">Products</router-link>
+            <router-link class="nav-link active fs-4" aria-current="page" to="/"
+              >Products</router-link
+            >
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/cart">Cart</router-link>
+            <router-link class="nav-link fs-4" to="/cart"
+              ><span class="fs-5">{{ cartItemCount }}</span> Cart</router-link
+            >
           </li>
           <!-- <li class="nav-item dropdown">
             <a
@@ -43,14 +47,23 @@
             <a class="nav-link disabled">Disabled</a>
           </li> -->
         </ul>
-        
       </div>
     </div>
   </nav>
 </template>
 
 <script>
-export default {};
+import { useStore } from "vuex";
+import { computed } from "vue";
+export default {
+  setup() {
+    const store = useStore();
+    let cartItemCount = computed(() => {
+      return store.getters.cartItemCount;
+    });
+    return { cartItemCount };
+  },
+};
 </script>
 
 <style></style>
