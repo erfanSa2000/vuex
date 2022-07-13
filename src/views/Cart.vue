@@ -20,14 +20,31 @@
           <img class="w-25" :src="item.product.major_image.url" />
           <div class="d-flex flex-column gap-5">
             <h3 class="fs-4">{{ item.product.title }}</h3>
-            <span class="fs-3"
-              >{{ item.quantity }} × {{ item.product.price }}</span
-            >
+            <div class="d-flex align-items-center gap-3">
+              <span class="d-flex align-items-center gap-2">
+                <button
+                  @click="addToCart()"
+                  class="btn bg-secondary text-light fs-4"
+                >
+                  +
+                </button>
+                <span class="fs-5">{{ item.quantity }}</span>
+                <button
+                  :class="{ disabledButton: item.quantity == 1 }"
+                  @click.prevent="removeProductFromCart(item.product)"
+                  class="btn bg-secondary text-light fs-4"
+                >
+                  -
+                </button>
+              </span>
+              <span class="fs-3">×</span>
+              <span class="fs-3"> {{ item.product.price }}</span>
+            </div>
             <button
-              @click.prevent="removeProductFromCart(item.product)"
+              @click.prevent="removeProductFromCartTotally(item.product)"
               class="btn bg-danger fs-5 text-light"
             >
-              حذف
+              حذف از سبد خرید
             </button>
           </div>
         </article>
@@ -39,20 +56,40 @@
 <script>
 import { computed } from "vue";
 import { useStore } from "vuex";
+import { ref } from "vue";
 export default {
   setup() {
     const store = useStore();
+
     let cart = computed(() => {
       return store.state.cart;
     });
     let cartTotalPrice = computed(() => {
       return store.getters.cartTotalPrice;
     });
-
+    let product = computed(() => {
+      return store.getters.getProduct;
+    });
     function removeProductFromCart(product) {
       store.dispatch("removeProductFromCart", product);
     }
-    return { cart, cartTotalPrice,removeProductFromCart };
+    function removeProductFromCartTotally(product) {
+      store.dispatch("removeProductFromCartTotally", product);
+    }
+    function addToCart() {
+      store.dispatch("addProductToCart", {
+        product: product.value,
+        quantity: 1,
+      });
+    }
+    return {
+      cart,
+      cartTotalPrice,
+      removeProductFromCart,
+      removeProductFromCartTotally,
+      addToCart,
+      product,
+    };
   },
 };
 </script>
@@ -62,5 +99,9 @@ export default {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(1fr, 1fr));
   gap: 10px;
+}
+.disabledButton {
+  opacity: 0.7;
+  pointer-events: none;
 }
 </style>

@@ -11,11 +11,12 @@ export default createStore({
     // product detail state
     product: null,
     // title state
-    title: null,
-
+    title: "",
+    sortName: "",
     productFlag: false,
     //cart
     cart: [],
+    categoryFilter: null,
   },
   mutations: {
     setProducts(state, list) {
@@ -45,10 +46,25 @@ export default createStore({
       });
     },
 
-    REMOVE_FROM_CART(state, product) {
+    REMOVE_ALL_FROM_CART(state, product) {
       state.cart = state.cart.filter((item) => {
         return item.product.id !== product.id;
       });
+    },
+    DECREASE_QUANTITY(state, product) {
+      state.cart = state.cart.filter((item) => {
+        if (item.quantity > 1) {
+          return item.quantity--;
+        } else {
+          return item.product.id !== product.id;
+        }
+      });
+    },
+    setSortName(state, val) {
+      state.sortName = val;
+    },
+    set_category_filter(state, val) {
+      state.categoryFilter = val;
     },
   },
   actions: {
@@ -74,9 +90,14 @@ export default createStore({
     // get products to search betweeen them
     async fetchTitle({ commit, state }) {
       await Axios.get(
-        `front/products?sort=${
-          state.top_sales != "" ? "&sort" + state.top_sales : ""
-        }${state.title != "" ? "&title=" + state.title : ""}`
+        `front/products?${
+          state.sortName != "" ? "sort=" + state.sortName : ""
+        }${state.title != "" ? "&title=" + state.title : ""}
+        ${
+          state.categoryFilter != ""
+            ? "&category_id=" + state.categoryFilter
+            : ""
+        }`
       ).then((res) => {
         commit("setProducts", res.data.data.products);
         commit("setProductFlag", true);
@@ -99,8 +120,11 @@ export default createStore({
     },
 
     // remove product from cart
+    removeProductFromCartTotally({ commit }, product) {
+      commit("REMOVE_ALL_FROM_CART", product);
+    },
     removeProductFromCart({ commit }, product) {
-      commit("REMOVE_FROM_CART", product);
+      commit("DECREASE_QUANTITY", product);
     },
   },
   getters: {
@@ -119,7 +143,9 @@ export default createStore({
     getCartProducct(state) {
       return state.cartItem;
     },
-
+    getSortName(state) {
+      return state.sortName;
+    },
     // show how many item are in the cart now
     cartItemCount(state) {
       // return state.cart.length;
@@ -139,6 +165,10 @@ export default createStore({
       });
 
       return total;
+    },
+
+    getCategoryFilter(state) {
+      return state.categoryFilter;
     },
   },
 });
