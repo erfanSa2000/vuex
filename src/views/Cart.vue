@@ -11,7 +11,12 @@
       <span class="fs-4 text-light">
         Total Price = تومان {{ cartTotalPrice }}</span
       >
-      <button class="btn bg-success text-warning fs-5 btn-outline-warning">ثبت خرید</button>
+      <button
+        @click="setCookies()"
+        class="btn bg-success text-warning fs-5 btn-outline-warning"
+      >
+        ثبت خرید
+      </button>
     </div>
     <div class="container my-5">
       <div class="inner-container">
@@ -59,9 +64,16 @@
 <script>
 import { computed } from "vue";
 import { useStore } from "vuex";
+import { useCookies } from "vue3-cookies";
 import { ref } from "vue";
+const { cookies } = useCookies();
+let self;
 export default {
+  created() {
+    self = this;
+  },
   setup() {
+    // const cookies = useCookies();
     const store = useStore();
 
     let cart = computed(() => {
@@ -85,6 +97,14 @@ export default {
         quantity: 1,
       });
     }
+
+    function setCookies() {
+      let json_str = JSON.stringify(cart.value);
+      console.log(json_str);
+      // let json_par = JSON.parse(json_str);
+      // console.log(json_par);
+      cookies.set("cart", json_str);
+    }
     return {
       cart,
       cartTotalPrice,
@@ -92,6 +112,7 @@ export default {
       removeProductFromCartTotally,
       addToCart,
       product,
+      setCookies,
     };
   },
 };
